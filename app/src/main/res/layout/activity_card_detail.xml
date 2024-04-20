@@ -233,7 +233,7 @@
                 android:id="@+id/autocomplete_company"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="none"
+                android:inputType="text"
                 android:padding="10dp"
                 android:textColor="@color/mainText"/>
 

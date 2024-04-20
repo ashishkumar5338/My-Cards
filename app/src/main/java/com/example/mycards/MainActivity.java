@@ -20,18 +20,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void initWidgets() {
-        cardListView=findViewById(R.id.cardListView);
+        cardListView = findViewById(R.id.cardListView);
     }
 
     private void loadFromDBToMemory() {
-        SQLiteManager sqLiteManager=SQLiteManager.instanceOfDatabase(this);
+        SQLiteManager sqLiteManager = SQLiteManager.instanceOfDatabase(this);
         sqLiteManager.populateCardListArray();
+        if (Card.cardArrayList.isEmpty()) {
+            int id = 0;
+            Card newCard = new Card(id, "1234", "5678", "1234", "5678", "SAMPLE NAME", "01", "40", "999", "SAMPLE BANK", "MasterCard");
+            Card.cardArrayList.add(newCard);
+            sqLiteManager.addCardToDatabase(newCard);
+        }
     }
 
     private void setCardAdapter() {
-        CardAdapter cardAdapter=new CardAdapter(getApplicationContext(),Card.cardArrayList);
+        CardAdapter cardAdapter = new CardAdapter(this, Card.nonDeletedCards());
         cardListView.setAdapter(cardAdapter);
     }
 
@@ -41,9 +46,12 @@ public class MainActivity extends AppCompatActivity {
 //        finish();
     }
 
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
+        setCardAdapter();
+    }
+
+    public void refreshActivity() {
         setCardAdapter();
     }
 

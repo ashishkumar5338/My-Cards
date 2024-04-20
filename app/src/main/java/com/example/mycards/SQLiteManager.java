@@ -72,6 +72,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.execSQL(sql.toString());
     }
 
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
@@ -124,9 +126,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
         }
     }
 
-    public void updateCardInDB(Card card){
-        SQLiteDatabase db=this.getWritableDatabase();
-        ContentValues contentValues=new ContentValues();
+    public void updateCardInDB(Card card) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
         contentValues.put(ID_FIELD, card.getId());
         contentValues.put(CARD1_FIELD, card.getN1());
         contentValues.put(CARD2_FIELD, card.getN2());
@@ -140,7 +142,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(CARD_COMPANY_FIELD, card.getCardCompany());
         contentValues.put(DELETED_FIELD, getStringFromDate(card.getDeleted()));
 
-        db.update(TABLE_NAME,contentValues,ID_FIELD+"=? ",new String[]{String.valueOf(card.getId())});
+        db.update(TABLE_NAME, contentValues, ID_FIELD + "=? ", new String[]{String.valueOf(card.getId())});
     }
 
     private String getStringFromDate(Date deleted) {

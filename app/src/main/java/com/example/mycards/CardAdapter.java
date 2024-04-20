@@ -1,10 +1,14 @@
 package com.example.mycards;
 
+import static android.content.Intent.getIntent;
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,14 +23,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Date;
 import java.util.List;
 
 public class CardAdapter extends ArrayAdapter<Card> {
     private final Context mContext; // Context variable to hold the context
+    private final MainActivity mActivity;
 
-    public CardAdapter(Context context, List<Card> cards) {
-        super(context, 0, cards);
-        mContext = context; // Initialize mContext in the constructor
+    public CardAdapter(MainActivity activity, List<Card> cards) {
+        super(activity, 0, cards);
+        mContext = activity; // Initialize mContext in the constructor
+        mActivity = activity;
     }
 
     @SuppressLint("ResourceType")
@@ -140,17 +147,27 @@ public class CardAdapter extends ArrayAdapter<Card> {
             Toast.makeText(mContext, label + " Copied to Clipboard", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void editItem(Card card) {
         // Implement your edit logic here
-        Toast.makeText(mContext, "edit Clicked"+card.getCardBank(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mContext, "edit Clicked " + card.getId(), Toast.LENGTH_SHORT).show();
+        // Handle edit action
+        Intent editCardIntent = new Intent(mContext, CardDetailActivity.class);
+        editCardIntent.putExtra(Card.NOTE_EDIT_EXTRA, card.getId());
+        mContext.startActivity(editCardIntent);
     }
 
     private void deleteItem(Card card) {
         // Implement your delete logic here
-        Toast.makeText(mContext, "delete Clicked"+card.getCardHolder(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Card Deleted : " + card.getCardBank(), Toast.LENGTH_SHORT).show();
+        card.setDeleted(new Date());
+        SQLiteManager sqLiteManager = SQLiteManager.instanceOfDatabase(mContext);
+        sqLiteManager.updateCardInDB(card);
+
+        // Call refresh method in activity
+        mActivity.refreshActivity();
+
     }
-
-
 
 
 }

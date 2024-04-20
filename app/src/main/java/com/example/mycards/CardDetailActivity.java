@@ -25,6 +25,7 @@ public class CardDetailActivity extends AppCompatActivity {
 
     private EditText card1, card2, card3, card4, cardHolder, cvv, cardBank;
     private AutoCompleteTextView autoCompleteTextViewmm, autoCompleteTextViewyy, autoCompleteTextViewcompany;
+    private Card selectedCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,29 @@ public class CardDetailActivity extends AppCompatActivity {
 
         formatter();
 
+        checkForEditCard();
 
+
+    }
+
+    private void checkForEditCard() {
+        Intent previousIntent = getIntent();
+
+        int passedCardID = previousIntent.getIntExtra(Card.NOTE_EDIT_EXTRA, -1);
+        selectedCard = Card.getCardForID(passedCardID);
+
+        if (selectedCard != null) {
+            card1.setText(selectedCard.getN1());
+            card2.setText(selectedCard.getN2());
+            card3.setText(selectedCard.getN3());
+            card4.setText(selectedCard.getN4());
+            cardHolder.setText(selectedCard.getCardHolder());
+            autoCompleteTextViewmm.setText(selectedCard.getMm());
+            autoCompleteTextViewyy.setText(selectedCard.getYy());
+            cvv.setText(selectedCard.getCvv());
+            cardBank.setText(selectedCard.getCardBank());
+            autoCompleteTextViewcompany.setText(selectedCard.getCardCompany());
+        }
     }
 
     private void initWidgets() {
@@ -60,7 +83,7 @@ public class CardDetailActivity extends AppCompatActivity {
     }
 
     public void saveCard(View view) {
-        SQLiteManager sqLiteManager=SQLiteManager.instanceOfDatabase(this);
+        SQLiteManager sqLiteManager = SQLiteManager.instanceOfDatabase(this);
         String c1 = String.valueOf(card1.getText());
         String c2 = String.valueOf(card2.getText());
         String c3 = String.valueOf(card3.getText());
@@ -72,10 +95,24 @@ public class CardDetailActivity extends AppCompatActivity {
         String card_Bank = String.valueOf(cardBank.getText());
         String card_Company = String.valueOf(autoCompleteTextViewcompany.getText());
 
-        int id = Card.cardArrayList.size();
-        Card newCard = new Card(id, c1, c2, c3, c4, card_Holder, expiry_mm, expiry_yy, card_cvv, card_Bank, card_Company);
-        Card.cardArrayList.add(newCard);
-        sqLiteManager.addCardToDatabase(newCard);
+        if (selectedCard == null) {
+            int id = Card.cardArrayList.size();
+            Card newCard = new Card(id, c1, c2, c3, c4, card_Holder, expiry_mm, expiry_yy, card_cvv, card_Bank, card_Company);
+            Card.cardArrayList.add(newCard);
+            sqLiteManager.addCardToDatabase(newCard);
+        } else {
+            selectedCard.setN1(c1);
+            selectedCard.setN2(c2);
+            selectedCard.setN3(c3);
+            selectedCard.setN4(c4);
+            selectedCard.setCardHolder(card_Holder);
+            selectedCard.setMm(expiry_mm);
+            selectedCard.setYy(expiry_yy);
+            selectedCard.setCvv(card_cvv);
+            selectedCard.setCardBank(card_Bank);
+            selectedCard.setCardCompany(card_Company);
+            sqLiteManager.updateCardInDB(selectedCard);
+        }
 //        Log.d("card", "saveCard: " + id + c1 + c2 + c3 + c4 + card_Holder + expiry_mm + expiry_yy + card_cvv + card_Bank + card_Company);
 //        Intent newCardIntent = new Intent(this, MainActivity.class);
 //        startActivity(newCardIntent);
@@ -106,27 +143,29 @@ public class CardDetailActivity extends AppCompatActivity {
                         editTexts.get(nextIndex).requestFocus();
                     } else if (s.length() == 0) {
                         editTexts.get(nextIndex - 1).requestFocus();
+                    } else if (s.length() == 4 && nextIndex == editTexts.size()) {
+                        cardHolder.requestFocus();
                     }
                 }
             });
         }
 
-        card4.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() == 4) {
-                    cardHolder.requestFocus();
-                }
-            }
-        });
+//        card4.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if (s.length() == 4) {
+//                    cardHolder.requestFocus();
+//                }
+//            }
+//        });
 
         cardHolder.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {

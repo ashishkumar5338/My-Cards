@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Card {
-    public static ArrayList<Card> cardArrayList=new ArrayList<>();
+    public static ArrayList<Card> cardArrayList = new ArrayList<>();
+    public static String NOTE_EDIT_EXTRA = "noteEdit";
     private int id;
     private String n1;
     private String n2;
@@ -19,7 +20,7 @@ public class Card {
     private Date deleted;
 
 
-    public Card(int id, String n1, String n2, String n3, String n4, String cardHolder, String mm, String yy, String cvv, String cardBank,String cardCompany, Date deleted) {
+    public Card(int id, String n1, String n2, String n3, String n4, String cardHolder, String mm, String yy, String cvv, String cardBank, String cardCompany, Date deleted) {
         this.id = id;
         this.n1 = n1;
         this.n2 = n2;
@@ -34,7 +35,7 @@ public class Card {
         this.deleted = deleted;
     }
 
-    public Card(int id, String n1, String n2, String n3, String n4, String cardHolder, String mm, String yy, String cvv, String cardBank,String cardCompany) {
+    public Card(int id, String n1, String n2, String n3, String n4, String cardHolder, String mm, String yy, String cvv, String cardBank, String cardCompany) {
         this.id = id;
         this.n1 = n1;
         this.n2 = n2;
@@ -47,6 +48,24 @@ public class Card {
         this.cardBank = cardBank;
         this.cardCompany = cardCompany;
         deleted = null;
+    }
+
+    public static Card getCardForID(int passedCardID) {
+        for (Card card : cardArrayList) {
+            if (card.getId() == passedCardID)
+                return card;
+        }
+
+        return null;
+    }
+
+    public static ArrayList<Card> nonDeletedCards() {
+        ArrayList<Card> nonDeletedCards = new ArrayList<>();
+        for (Card card : cardArrayList) {
+            if (card.getDeleted() == null)
+                nonDeletedCards.add(card);
+        }
+        return nonDeletedCards;
     }
 
     public int getId() {
@@ -128,6 +147,7 @@ public class Card {
     public void setCardBank(String cardBank) {
         this.cardBank = cardBank;
     }
+
     public String getCardCompany() {
         return cardCompany;
     }
@@ -135,6 +155,7 @@ public class Card {
     public void setCardCompany(String cardCompany) {
         this.cardCompany = cardCompany;
     }
+
     public Date getDeleted() {
         return deleted;
     }
